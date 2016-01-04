@@ -1,10 +1,10 @@
 package xgt.easy.webservice.request;
 
 import xgt.easy.webservice.Request;
-import xgt.easy.webservice.annotation.Path;
-import xgt.easy.webservice.annotation.SupperAvailable;
+import xgt.easy.webservice.annotation.*;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +17,9 @@ import java.util.List;
 @SupperAvailable
 public class SimpleRequest extends Request {
     @Path(order = 2)
+    @Required
+    @Encode
+    @Filter
     private String subPrivate = "subPrivate";
     protected String subProtected = "subProtected";
     @Path(order = 1)
@@ -27,8 +30,22 @@ public class SimpleRequest extends Request {
         List<Field> fields = request.getFields();
         for(Field field:fields){
             System.out.println(field.getName());
+            if(field.getAnnotations().length>1){
+                System.out.println("============================");
+                for (Annotation a:field.getAnnotations()){
+                    System.out.println(field.getDeclaringClass());
+                }
+                System.out.println("============================");
+            }
         }
         request.sortFields(fields);
+    }
+
+    public boolean checkAnnotations(Field field){
+        Annotation[] as = field.getAnnotations();
+//        if(as.length<=1){
+            return true;
+//        }
     }
 
     public void sortFields(List<Field> fields){
@@ -66,6 +83,12 @@ public class SimpleRequest extends Request {
         for(Field field:paths){
             System.out.println(field.getName());
         }
+
+        //path:before filter,encode,after filter
+
+        /**
+         * 顺序:ignore/required/skip,before filter,encode,after filter,url,name
+         */
     }
 
     public static void selectSort(int a[]) {

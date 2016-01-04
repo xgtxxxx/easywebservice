@@ -1,7 +1,7 @@
 package xgt.easy.webservice;
 
 import xgt.easy.webservice.annotation.Path;
-import xgt.easy.webservice.annotation.SupperAvailable;
+import xgt.easy.webservice.model.RequestInfo;
 
 /**
  * Created by xgt on 2015/12/30.
