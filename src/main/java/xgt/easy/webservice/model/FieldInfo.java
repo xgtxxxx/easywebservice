@@ -6,15 +6,9 @@ public class FieldInfo {
     private Field field;
     private int order = 10000;
     private String key;
-    private String value;
+    private Object value;
 
-    public static FieldInfo newInstance(final Field f){
-        final FieldInfo info = new FieldInfo();
-        info.setField(f);
-        info.setKey(f.getName());
-        info.setValue(f.get);
-        return info;
-    }
+    private FieldType fieldType;
 
     public Field getField() {
         return field;
@@ -40,11 +34,19 @@ public class FieldInfo {
         this.key = key;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(final String value) {
+    public void setValue(Object value) {
         this.value = value;
+    }
+
+    public FieldType getFieldType() {
+        return fieldType;
+    }
+
+    public void setFieldType(FieldType fieldType) {
+        this.fieldType = fieldType;
     }
 }

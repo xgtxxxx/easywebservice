@@ -10,11 +10,9 @@ public class SimpleClient implements Client {
 
     private RequestHandlerChain handlerChain;
 
-    @Override
-    public <T> T doRequest(Request request, Adapter<Object, T> adapter) {
+    public <T> T doRequest(Request request, Adapter<Object, T> adapter) throws IllegalAccessException {
         final RequestInfo info = this.handlerChain.handle(request);
-
-
+        //call request client
         return adapter.convertTo(null);
     }
 }
