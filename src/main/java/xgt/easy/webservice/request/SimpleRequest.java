@@ -12,14 +12,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by xgt on 2016/1/3.
- */
-@SupperAvailable
-public class SimpleRequest extends Request {
+public abstract class SimpleRequest extends Request {
+    @Path
+    private String ctx = "b2r";
 
-    @Override
-    public HttpMethod getHttpMethod() {
-        return null;
+    public String getCtx() {
+        return ctx;
+    }
+
+    public void setCtx(String ctx) {
+        this.ctx = ctx;
     }
 }

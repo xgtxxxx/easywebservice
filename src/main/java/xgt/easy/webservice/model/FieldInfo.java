@@ -7,6 +7,7 @@ public class FieldInfo {
     private int order = 10000;
     private String key;
     private Object value;
+    private boolean skip;
 
     private FieldType fieldType;
 
@@ -44,6 +45,14 @@ public class FieldInfo {
 
     public FieldType getFieldType() {
         return fieldType;
+    }
+
+    public boolean isSkip() {
+        return skip;
+    }
+
+    public void setSkip(boolean skip) {
+        this.skip = skip;
     }
 
     public void setFieldType(FieldType fieldType) {

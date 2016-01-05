@@ -8,5 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Skip {
-    String skip
+    String skipIfExist();
+    String skipIfMatch();
 }

@@ -2,6 +2,7 @@ package xgt.easy.webservice.model;
 
 import xgt.easy.webservice.HttpMethod;
 
+import java.util.List;
 import java.util.Map;
 
 public class RequestInfo {
@@ -9,7 +10,7 @@ public class RequestInfo {
 
     private String requestUrl;
 
-    private Map<String,Object> formData;
+    private List<FormPair> formData;
 
     public HttpMethod getHttpMethod() {
         return httpMethod;
@@ -27,11 +28,11 @@ public class RequestInfo {
         this.requestUrl = requestUrl;
     }
 
-    public Map<String, Object> getFormData() {
+    public List<FormPair> getFormData() {
         return formData;
     }
 
-    public void setFormData(Map<String, Object> formData) {
+    public void setFormData(List<FormPair> formData) {
         this.formData = formData;
     }
 }

@@ -1,5 +1,6 @@
 package xgt.easy.webservice.handler;
 
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -12,8 +13,10 @@ import xgt.easy.webservice.annotation.SupperAvailable;
 import xgt.easy.webservice.annotation.UrlParameter;
 import xgt.easy.webservice.model.FieldInfo;
 import xgt.easy.webservice.model.FieldType;
+import xgt.easy.webservice.model.FormPair;
 import xgt.easy.webservice.model.RequestInfo;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -50,7 +53,7 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
         return parent;
     }
 
-    public RequestInfo handle(final Object request) throws IllegalAccessException {
+    public RequestInfo handle(final Object request) throws IllegalAccessException, UnsupportedEncodingException {
         final List<FieldInfo> infos = getFieldInfos(request);
         final List<FieldInfo> paths = new ArrayList<FieldInfo>();
         final List<FieldInfo> parameters = new ArrayList<FieldInfo>();
@@ -61,19 +64,21 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
                 case PARAMETER:parameters.add(info);break;
                 case FORM_DATA:formDatas.add(info);break;
             }
-            getNext().handle(info);
+            fireNext(info);
         }
         final RequestInfo requestInfo = new RequestInfo();
         requestInfo.setFormData(buildFormData(formDatas));
         requestInfo.setHttpMethod(((Request)request).getHttpMethod());
-        requestInfo.setRequestUrl(buildUrlParameter(parameters));
+        requestInfo.setRequestUrl(buildPath(paths)+buildUrlParameter(parameters));
         return requestInfo;
     }
-
     private String buildPath(final List<FieldInfo> infos){
         Collections.sort(infos,new Sortable());
         final StringBuffer sb = new StringBuffer();
         for(final FieldInfo info:infos){
+            if(info.isSkip()){
+                continue;
+            }
             sb.append('/').append(info.getValue());
         }
         return sb.toString();
@@ -84,20 +89,27 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
         final StringBuffer sb = new StringBuffer();
         int index = 0;
         for(final FieldInfo info:infos){
+            if(info.isSkip()){
+                continue;
+            }
             if(index==0){
                 sb.append('?');
             }else{
                 sb.append('&');
             }
             sb.append(info.getKey()).append('=').append(info.getValue());
+            index++;
         }
         return sb.toString();
     }
 
-    private Map<String,Object> buildFormData(final List<FieldInfo> infos){
-        final Map<String,Object> form = new HashMap<String,Object>();
+    private List<FormPair> buildFormData(final List<FieldInfo> infos){
+        final List<FormPair> form = new ArrayList<FormPair>();
         for (final FieldInfo info:infos){
-            form.put(info.getKey(),info.getValue());
+            if(info.isSkip()){
+                continue;
+            }
+            form.add(new FormPair(info.getKey(),info.getValue()));
         }
         return form;
     }
@@ -117,6 +129,7 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
 
         final List<FieldInfo> infos = new ArrayList<FieldInfo>();
         for (final Field field:fields){
+            field.setAccessible(true);
             final FieldInfo info = new FieldInfo();
             info.setField(field);
             info.setKey(field.getName());
