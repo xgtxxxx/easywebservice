@@ -2,10 +2,12 @@ package xgt.easy.webservice.request;
 
 import xgt.easy.webservice.HttpMethod;
 import xgt.easy.webservice.annotation.Encode;
+import xgt.easy.webservice.annotation.Filter;
 import xgt.easy.webservice.annotation.SupperAvailable;
 
 @SupperAvailable
 @Encode
+@Filter
 public class GetRequest extends SimpleRequest{
     private Integer start;
     private String term;

@@ -22,12 +22,10 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class RequestHandlerChain extends Handler implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(RequestHandlerChain.class);
-    private final String SKIP_HANDLER = "skip_handler";
-    private final String AFTER_ENCODE_FILTER_HANDLER = "after_encode_filter_handler";
-    private final String BEFORE_ENCODE_FILTER_HANDLER = "before_encode_filter_handler";
-    private final String ENCODE_HANDLER = "encode_handler";
-    private final String RENAME_HANDLER = "rename_handler";
+    public static final String SKIP_HANDLER = "skip_handler";
+    public static final String FILTER_HANDLER = "filter_handler";
+    public static final String ENCODE_HANDLER = "encode_handler";
+    public static final String RENAME_HANDLER = "rename_handler";
 
     private Map<String,Handler> handlers = new HashMap<String,Handler>();
 
@@ -36,13 +34,15 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
     }
 
     public void buildChain(){
-        Handler next = handlers.get(SKIP_HANDLER)==null?new SkipHandler():handlers.get(SKIP_HANDLER);
-        Handler parent = buildNext(this, next);
-        parent = buildNext(parent, handlers.get(BEFORE_ENCODE_FILTER_HANDLER));
-        next = handlers.get(ENCODE_HANDLER)==null?new EncodeHandler():handlers.get(ENCODE_HANDLER);
-        parent = buildNext(parent,next);
-        parent = buildNext(parent,handlers.get(AFTER_ENCODE_FILTER_HANDLER));
-        parent = buildNext(parent,handlers.get(RENAME_HANDLER));
+        Handler next = buildNext(this, handlers.get(SKIP_HANDLER)==null?new SkipHandler():handlers.get(SKIP_HANDLER));
+        next = buildNext(next, handlers.get(FILTER_HANDLER));
+        next = buildNext(next,handlers.get(ENCODE_HANDLER)==null?new EncodeHandler():handlers.get(ENCODE_HANDLER));
+        next = buildNext(next,handlers.get(FILTER_HANDLER));
+        buildNext(next,handlers.get(RENAME_HANDLER)==null?new RenameHandler():handlers.get(RENAME_HANDLER));
+    }
+
+    public void addHandler(final String key, final Handler handler){
+        this.handlers.put(key,handler);
     }
 
     private Handler buildNext(Handler parent,Handler next){

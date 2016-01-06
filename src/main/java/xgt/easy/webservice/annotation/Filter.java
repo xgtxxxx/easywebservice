@@ -8,7 +8,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD,ElementType.TYPE})
 public @interface Filter {
-    Action action() default Action.BEFORE_ENCODE;
+    Action value() default Action.BEFORE_ENCODE;
+
 }

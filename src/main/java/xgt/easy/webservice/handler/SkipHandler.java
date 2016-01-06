@@ -14,14 +14,14 @@ public class SkipHandler extends Handler {
     public Object handle(Object request) throws IllegalAccessException, UnsupportedEncodingException {
         if(request instanceof FieldInfo){
             final FieldInfo info = (FieldInfo)request;
-            final Skip skip = info.getField().getAnnotation(Skip.class);
+            Skip skip = info.getField().getDeclaringClass().getAnnotation(Skip.class);
+            if(skip==null){
+                skip = info.getField().getAnnotation(Skip.class);
+            }
             if(skip!=null){
-                boolean isSkip = isExist(info,skip.skipIfExist());
-                if(isSkip){
-                    info.setSkip(true);
-                }else{
-                    info.setSkip(isMatch(info,skip.skipIfMatch()));
-                }
+                skipIfEmpty(info, skip.skipIfEmpty());
+                skipIfExist(info,skip.skipIfExist());
+                skipIfMatch(info, skip.skipIfMatch());
             }
             return fireNext(info);
         }else{
@@ -29,29 +29,39 @@ public class SkipHandler extends Handler {
         }
     }
 
-    private boolean isMatch(final FieldInfo info,final String s) {
-        if(StringUtils.isNotEmpty(s)){
-            final Object obj = info.getValue();
-            if(obj!=null){
-                final String value = String.valueOf(obj);
-                final Pattern reg = Pattern.compile(s);
-                final Matcher m = reg.matcher(value);
-                return m.matches();
+    private void skipIfEmpty(final FieldInfo info, final boolean isSkip) {
+        if(isSkip){
+            if(StringUtils.isEmpty(StringUtils.toString(info.getValue()))){
+                info.setSkip(true);
             }
         }
-        return false;
     }
 
-    private boolean isExist(final FieldInfo info,final String filterString){
-        if(StringUtils.isNotEmpty(filterString)){
-            final Object obj = info.getValue();
-            if(obj!=null){
-                final String value = String.valueOf(obj);
-                if(value.indexOf(filterString)!=-1){
-                    return true;
+    private void skipIfMatch(final FieldInfo info,final String s) {
+        if(!info.isSkip()) {
+            if (StringUtils.isNotEmpty(s)) {
+                final Object obj = info.getValue();
+                if (obj != null) {
+                    final String value = StringUtils.toString(obj);
+                    final Pattern reg = Pattern.compile(s);
+                    final Matcher m = reg.matcher(value);
+                    info.setSkip(m.matches());
                 }
             }
         }
-        return false;
+    }
+
+    private void skipIfExist(final FieldInfo info,final String filterString){
+        if(!info.isSkip()){
+            if(StringUtils.isNotEmpty(filterString)){
+                final Object obj = info.getValue();
+                if(obj!=null){
+                    final String value = StringUtils.toString(obj);
+                    if(value.indexOf(filterString)!=-1){
+                        info.setSkip(true);
+                    }
+                }
+            }
+        }
     }
 }

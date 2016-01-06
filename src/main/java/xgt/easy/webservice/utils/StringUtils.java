@@ -7,4 +7,8 @@ public final class StringUtils {
     public static final boolean isNotEmpty(final String string){
         return string!=null&&!"".equals(string);
     }
+
+    public static final String toString(Object obj){
+        return obj==null?null:String.valueOf(obj);
+    }
 }

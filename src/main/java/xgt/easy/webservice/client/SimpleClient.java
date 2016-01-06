@@ -16,6 +16,7 @@ import xgt.easy.webservice.Request;
 import xgt.easy.webservice.handler.RequestHandlerChain;
 import xgt.easy.webservice.model.FormPair;
 import xgt.easy.webservice.model.RequestInfo;
+import xgt.easy.webservice.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -70,7 +71,7 @@ public class SimpleClient implements Client {
     private List<NameValuePair> convertTo(List<FormPair> formPairs){
         List <NameValuePair> nvps = new ArrayList<NameValuePair>();
         for(FormPair formPair:formPairs){
-            nvps.add(new BasicNameValuePair(formPair.getKey(), String.valueOf(formPair.getValue())));
+            nvps.add(new BasicNameValuePair(formPair.getKey(), StringUtils.toString(formPair.getValue())));
         }
         return nvps;
     }

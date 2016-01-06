@@ -3,6 +3,7 @@ package xgt.easy.webservice.handler;
 import xgt.easy.webservice.Handler;
 import xgt.easy.webservice.annotation.Encode;
 import xgt.easy.webservice.model.FieldInfo;
+import xgt.easy.webservice.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -21,7 +22,7 @@ public class EncodeHandler extends Handler {
             }
             if(needEncode){
                 if(info.getValue()!=null){
-                    String value = String.valueOf(info.getValue());
+                    String value = StringUtils.toString(info.getValue());
                     info.setValue(URLEncoder.encode(value, "utf-8"));
                 }
             }
