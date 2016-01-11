@@ -1,10 +1,7 @@
 package xgt.easy.webservice;
 
-import java.io.IOException;
+import javax.xml.ws.WebServiceException;
 
-/**
- * Created by xgt on 2015/12/30.
- */
 public interface Client {
-    public <T> T doRequest(final Request request,final Adapter<Object,T> adapter) throws IllegalAccessException, IOException;
+    public <T> T doRequest(final Request request,final Adapter<T> adapter) throws WebServiceException;
 }

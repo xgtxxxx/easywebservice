@@ -3,11 +3,11 @@ package xgt.easy.webservice.model;
 /**
  * Created by xgt on 2016/1/5.
  */
-public class FormPair {
+public class ParameterPair {
     private String key;
     private Object value;
 
-    public FormPair(String key, Object value) {
+    public ParameterPair(String key, Object value) {
         this.key = key;
         this.value = value;
     }

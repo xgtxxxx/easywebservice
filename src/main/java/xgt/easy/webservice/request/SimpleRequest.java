@@ -13,8 +13,14 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class SimpleRequest extends Request {
+    @Path(append = "")
+    @Order(-1)
+    @Skip
+    private String host;
     @Path
-    private String ctx = "b2r";
+    @Order(0)
+    @Skip
+    private String ctx;
 
     public String getCtx() {
         return ctx;
@@ -22,5 +28,13 @@ public abstract class SimpleRequest extends Request {
 
     public void setCtx(String ctx) {
         this.ctx = ctx;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 }

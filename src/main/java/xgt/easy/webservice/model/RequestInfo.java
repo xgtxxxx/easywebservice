@@ -2,15 +2,17 @@ package xgt.easy.webservice.model;
 
 import xgt.easy.webservice.HttpMethod;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class RequestInfo {
     private HttpMethod httpMethod;
 
     private String requestUrl;
 
-    private List<FormPair> formData;
+    private List<ParameterPair> formData;
+
+    private List<ParameterPair> headers;
 
     public HttpMethod getHttpMethod() {
         return httpMethod;
@@ -28,11 +30,26 @@ public class RequestInfo {
         this.requestUrl = requestUrl;
     }
 
-    public List<FormPair> getFormData() {
+    public List<ParameterPair> getFormData() {
         return formData;
     }
 
-    public void setFormData(List<FormPair> formData) {
+    public void addHeaders(final List<ParameterPair> hds){
+        if(headers==null){
+            headers = new ArrayList<ParameterPair>();
+        }
+        headers.addAll(hds);
+    }
+
+    public void setFormData(List<ParameterPair> formData) {
         this.formData = formData;
+    }
+
+    public List<ParameterPair> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<ParameterPair> headers) {
+        this.headers = headers;
     }
 }

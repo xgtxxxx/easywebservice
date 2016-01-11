@@ -9,12 +9,5 @@ http://www.springframework.org/schema/context
 http://www.springframework.org/schema/context/spring-context-4.2.xsd
 ">
     <context:component-scan base-package="xgt.easy.webservice" />
-    <bean id="filterHandler" class="xgt.easy.webservice.handler.MyFilterHandler"></bean>
-    <bean id="requestHandlerChain" class="xgt.easy.webservice.handler.RequestHandlerChain">
-        <property name="handlers">
-            <map>
-                <entry key="filter_handler" value-ref="filterHandler"/>
-            </map>
-        </property>
-    </bean>
+    <bean id="easyHttpClient" class="xgt.easy.webservice.client.EasyHttpClient"></bean>
 </beans>

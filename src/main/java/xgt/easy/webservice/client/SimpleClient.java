@@ -1,78 +1,75 @@
 package xgt.easy.webservice.client;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
+import org.springframework.beans.factory.InitializingBean;
 import xgt.easy.webservice.Adapter;
 import xgt.easy.webservice.Client;
 import xgt.easy.webservice.Request;
+import xgt.easy.webservice.exception.EasyWebserviceException;
 import xgt.easy.webservice.handler.RequestHandlerChain;
-import xgt.easy.webservice.model.FormPair;
+import xgt.easy.webservice.model.ParameterPair;
 import xgt.easy.webservice.model.RequestInfo;
-import xgt.easy.webservice.utils.StringUtils;
+import xgt.easy.webservice.model.ResponseInfo;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleClient implements Client {
-
+public abstract class SimpleClient implements Client ,InitializingBean {
     private RequestHandlerChain handlerChain;
 
-    public <T> T doRequest(Request request, Adapter<Object, T> adapter) throws IllegalAccessException, IOException {
-        final RequestInfo info = this.handlerChain.handle(request);
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        CloseableHttpResponse response = null;
-        try {
-            response = httpclient.execute(getHttpUriRequest(info));
-            return adapter.convertTo(response.getEntity().getContent());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            response.close();
-            httpclient.close();
+    private List<ParameterPair> headers;
+
+    public void afterPropertiesSet() throws Exception {
+        if(handlerChain==null){
+            handlerChain = new RequestHandlerChain();
+            handlerChain.buildChain();
         }
-        return null;
     }
 
-    private HttpUriRequest getHttpUriRequest(final RequestInfo info) throws UnsupportedEncodingException {
-        HttpUriRequest request = null;
+    public <T> T doRequest(Request request, Adapter<T> adapter) throws EasyWebserviceException {
+        try{
+            final RequestInfo info = this.handlerChain.handle(request);
+            if(headers!=null){
+                info.addHeaders(headers);
+            }
+            return adapter.convertTo(doRequest(info));
+        }catch (Exception e){
+            throw new EasyWebserviceException(e);
+        }
+    }
+
+    private ResponseInfo doRequest(final RequestInfo info) throws IOException {
+        ResponseInfo result = null;
         switch (info.getHttpMethod()){
             case GET:
-                request = new HttpGet(info.getRequestUrl());
+                result = doGet(info);
                 break;
             case POST:
-                HttpPost post = new HttpPost(info.getRequestUrl());
-                post.setEntity(new UrlEncodedFormEntity(convertTo(info.getFormData())));
-                request = post;
+                result = doPost(info);
                 break;
             case PUT:
-                //TODO
+                result = doPut(info);
                 break;
             case DELETE:
-                //TODO
+                result = doDelete(info);
                 break;
         }
-        return request;
+        return result;
     }
 
-    private List<NameValuePair> convertTo(List<FormPair> formPairs){
-        List <NameValuePair> nvps = new ArrayList<NameValuePair>();
-        for(FormPair formPair:formPairs){
-            nvps.add(new BasicNameValuePair(formPair.getKey(), StringUtils.toString(formPair.getValue())));
-        }
-        return nvps;
+    public abstract ResponseInfo doGet(final RequestInfo info) throws IOException;
+
+    public abstract ResponseInfo doPost(final RequestInfo info);
+
+    public abstract ResponseInfo doPut(final RequestInfo info);
+
+    public abstract ResponseInfo doDelete(final RequestInfo info);
+
+    public List<ParameterPair> getHeaders() {
+        return headers;
     }
+
+    public void setHeaders(List<ParameterPair> headers) {
+        this.headers = headers;
+    }
+
 }
