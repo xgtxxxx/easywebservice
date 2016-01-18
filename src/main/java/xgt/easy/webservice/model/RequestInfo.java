@@ -46,7 +46,7 @@ public class RequestInfo {
     }
 
     public List<ParameterPair> getHeaders() {
-        return headers;
+        return headers==null?new ArrayList<ParameterPair>():headers;
     }
 
     public void setHeaders(List<ParameterPair> headers) {

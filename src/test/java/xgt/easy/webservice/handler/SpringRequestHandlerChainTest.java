@@ -11,7 +11,6 @@ import xgt.easy.webservice.Request;
 import xgt.easy.webservice.client.EasyHttpClient;
 import xgt.easy.webservice.client.SimpleClient;
 import xgt.easy.webservice.model.ResponseInfo;
-import xgt.easy.webservice.request.SimpleRequest;
 import xgt.easy.webservice.utils.StringUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -22,10 +21,7 @@ public class SpringRequestHandlerChainTest {
 
     @Test
     public void testBaidu(){
-        SimpleRequest request = new BaiduRequest();
-        request.setHost("http://www.baidu.com");
-        request.setCtx("s");
-
+        Request request = new BaiduRequest();
         String result = client.doRequest(request, new Adapter<String>() {
             public String convertTo(ResponseInfo f) {
                 return StringUtils.toString(f.getBody());

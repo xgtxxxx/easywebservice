@@ -1,13 +1,11 @@
 package xgt.easy.webservice.handler;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import xgt.easy.webservice.Handler;
 import xgt.easy.webservice.HttpMethod;
 import xgt.easy.webservice.Request;
-import xgt.easy.webservice.annotation.Order;
-import xgt.easy.webservice.annotation.Path;
-import xgt.easy.webservice.annotation.SupperAvailable;
-import xgt.easy.webservice.annotation.UrlParameter;
+import xgt.easy.webservice.annotation.*;
 import xgt.easy.webservice.model.FieldInfo;
 import xgt.easy.webservice.model.FieldType;
 import xgt.easy.webservice.model.ParameterPair;
@@ -67,15 +65,23 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
         final RequestInfo requestInfo = new RequestInfo();
         requestInfo.setFormData(buildFormData(formDatas));
         requestInfo.setHttpMethod(((Request)request).getHttpMethod());
-        requestInfo.setRequestUrl(buildPath(paths)+buildUrlParameter(parameters));
+        requestInfo.setRequestUrl(buildUrl((Request) request, paths, parameters));
         requestInfo.setHeaders(((Request) request).getHeaders());
         return requestInfo;
     }
+
+    private String buildUrl(final Request request,final List<FieldInfo> paths,final List<FieldInfo> parameters){
+        return request.getHost()+request.getCtx()+buildPath(paths)+buildUrlParameter(parameters);
+    }
+
     private String buildPath(final List<FieldInfo> infos){
         Collections.sort(infos,new Sortable());
         final StringBuffer sb = new StringBuffer();
         for(final FieldInfo info:infos){
             if(info.isSkip()){
+                if(getLogger().isInfoEnabled()){
+                    getLogger().info("Field : {} is skiped",info.getField().getName());
+                }
                 continue;
             }
             sb.append(info.getValue());
@@ -89,6 +95,9 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
         int index = 0;
         for(final FieldInfo info:infos){
             if(info.isSkip()){
+                if(getLogger().isInfoEnabled()){
+                    getLogger().info("Field : {} is skiped",info.getField().getName());
+                }
                 continue;
             }
             if(index==0){
@@ -104,8 +113,11 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
 
     private List<ParameterPair> buildFormData(final List<FieldInfo> infos){
         final List<ParameterPair> form = new ArrayList<ParameterPair>();
-        for (final FieldInfo info:infos){
-            if(info.isSkip()){
+        for (final FieldInfo info : infos) {
+            if (info.isSkip()){
+                if(getLogger().isInfoEnabled()){
+                    getLogger().info("Field : {} is skiped",info.getField().getName());
+                }
                 continue;
             }
             form.add(new ParameterPair(info.getKey(),info.getValue()));
@@ -128,19 +140,30 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
 
         final List<FieldInfo> infos = new ArrayList<FieldInfo>();
         for (final Field field:fields){
-            field.setAccessible(true);
-            final FieldInfo info = new FieldInfo();
-            info.setField(field);
-            info.setKey(field.getName());
-            info.setValue(field.get(obj));
-            final Order order = field.getAnnotation(Order.class);
-            if(order!=null){
-                info.setOrder(order.value());
+            if(!isIgnore(field)){
+                field.setAccessible(true);
+                final FieldInfo info = new FieldInfo();
+                info.setField(field);
+                info.setKey(field.getName());
+                info.setValue(field.get(obj));
+                final Order order = field.getAnnotation(Order.class);
+                if(order!=null){
+                    info.setOrder(order.value());
+                }
+                setFieldType(info,(Request)obj);
+                infos.add(info);
+            }else{
+                if(getLogger().isInfoEnabled()){
+                    getLogger().info("Field : {} is ignored",field.getName());
+                }
             }
-            setFieldType(info,(Request)obj);
-            infos.add(info);
         }
         return infos;
+    }
+
+    private boolean isIgnore(final Field field) {
+        final Ignore ignore = field.getAnnotation(Ignore.class);
+        return ignore!=null;
     }
 
     private void setFieldType(final FieldInfo info,final Request request){
