@@ -1,5 +1,7 @@
 package xgt.easy.webservice.model;
 
+import xgt.easy.webservice.utils.StringUtils;
+
 /**
  * Created by xgt on 2016/1/5.
  */
@@ -18,5 +20,9 @@ public class ParameterPair {
 
     public Object getValue() {
         return value;
+    }
+
+    public String getStringValue(){
+        return StringUtils.toString(value);
     }
 }
