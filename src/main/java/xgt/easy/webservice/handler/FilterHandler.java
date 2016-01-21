@@ -2,14 +2,16 @@ package xgt.easy.webservice.handler;
 
 import xgt.easy.webservice.Handler;
 import xgt.easy.webservice.annotation.Filter;
+import xgt.easy.webservice.exception.EasyWebserviceException;
 import xgt.easy.webservice.model.Action;
 import xgt.easy.webservice.model.FieldInfo;
+import xgt.easy.webservice.model.RequestInfo;
 
 import java.io.UnsupportedEncodingException;
 
 public abstract class FilterHandler extends Handler {
     @Override
-    public Object handle(Object request) throws IllegalAccessException, UnsupportedEncodingException {
+    public FieldInfo handle(Object request) throws EasyWebserviceException {
         if(request instanceof FieldInfo){
             FieldInfo info = (FieldInfo)request;
             Filter filter = info.getField().getDeclaringClass().getAnnotation(Filter.class);

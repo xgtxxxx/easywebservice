@@ -53,7 +53,6 @@ public class PoolingClientTest {
                 }
             });
             thread.start();
-            System.out.println(Thread.activeCount());
         }
         while (true)
         {

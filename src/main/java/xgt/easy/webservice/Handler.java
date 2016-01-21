@@ -2,19 +2,23 @@ package xgt.easy.webservice;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xgt.easy.webservice.exception.EasyWebserviceException;
+import xgt.easy.webservice.model.FieldInfo;
+import xgt.easy.webservice.model.RequestInfo;
 
+import javax.xml.ws.WebServiceException;
 import java.io.UnsupportedEncodingException;
 
-public abstract class Handler {
+public abstract class Handler{
     private static final Logger LOG = LoggerFactory.getLogger(Handler.class);
     private Handler next;
-    public abstract Object handle(final Object request) throws IllegalAccessException, UnsupportedEncodingException;
+    public abstract <T> T handle(final Object request) throws EasyWebserviceException;
 
-    protected Object fireNext(final Object request) throws IllegalAccessException, UnsupportedEncodingException {
+    protected FieldInfo fireNext(final Object request) throws EasyWebserviceException {
         if(next!=null){
             return next.handle(request);
         }else{
-            return request;
+            return (FieldInfo)request;
         }
     }
 

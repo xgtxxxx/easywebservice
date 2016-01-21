@@ -2,7 +2,9 @@ package xgt.easy.webservice.handler;
 
 import xgt.easy.webservice.Handler;
 import xgt.easy.webservice.annotation.Skip;
+import xgt.easy.webservice.exception.EasyWebserviceException;
 import xgt.easy.webservice.model.FieldInfo;
+import xgt.easy.webservice.model.RequestInfo;
 import xgt.easy.webservice.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -11,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class SkipHandler extends Handler {
     @Override
-    public Object handle(Object request) throws IllegalAccessException, UnsupportedEncodingException {
+    public FieldInfo handle(Object request) throws EasyWebserviceException{
         if(request instanceof FieldInfo){
             final FieldInfo info = (FieldInfo)request;
             Skip skip = info.getField().getDeclaringClass().getAnnotation(Skip.class);

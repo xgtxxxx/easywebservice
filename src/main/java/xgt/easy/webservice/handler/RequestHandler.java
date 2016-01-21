@@ -1,55 +1,22 @@
 package xgt.easy.webservice.handler;
 
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import xgt.easy.webservice.Handler;
 import xgt.easy.webservice.HttpMethod;
 import xgt.easy.webservice.Request;
 import xgt.easy.webservice.annotation.*;
+import xgt.easy.webservice.exception.EasyWebserviceException;
 import xgt.easy.webservice.model.FieldInfo;
 import xgt.easy.webservice.model.FieldType;
 import xgt.easy.webservice.model.ParameterPair;
 import xgt.easy.webservice.model.RequestInfo;
 import xgt.easy.webservice.utils.StringUtils;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class RequestHandlerChain extends Handler implements InitializingBean {
-    public static final String SKIP_HANDLER = "skip_handler";
-    public static final String FILTER_HANDLER = "filter_handler";
-    public static final String ENCODE_HANDLER = "encode_handler";
-    public static final String RENAME_HANDLER = "rename_handler";
-
-    private Map<String,Handler> handlers = new HashMap<String,Handler>();
-
-    public void afterPropertiesSet() throws Exception {
-        buildChain();
-    }
-
-    public void buildChain(){
-        Handler next = buildNext(this, handlers.get(SKIP_HANDLER)==null?new SkipHandler():handlers.get(SKIP_HANDLER));
-        next = buildNext(next, handlers.get(FILTER_HANDLER));
-        next = buildNext(next,handlers.get(ENCODE_HANDLER)==null?new EncodeHandler():handlers.get(ENCODE_HANDLER));
-        next = buildNext(next,handlers.get(FILTER_HANDLER));
-        buildNext(next,handlers.get(RENAME_HANDLER)==null?new RenameHandler():handlers.get(RENAME_HANDLER));
-    }
-
-    public void addHandler(final String key, final Handler handler){
-        this.handlers.put(key,handler);
-    }
-
-    private Handler buildNext(Handler parent,Handler next){
-        if(next!=null){
-            parent.setNext(next);
-            parent = next;
-        }
-        return parent;
-    }
-
-    public RequestInfo handle(final Object request) throws IllegalAccessException, UnsupportedEncodingException {
+public class RequestHandler extends Handler {
+    public RequestInfo handle(final Object request) throws EasyWebserviceException {
         final List<FieldInfo> infos = getFieldInfos(request);
         final List<FieldInfo> paths = new ArrayList<FieldInfo>();
         final List<FieldInfo> parameters = new ArrayList<FieldInfo>();
@@ -125,7 +92,7 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
         return form;
     }
 
-    private List<FieldInfo> getFieldInfos(final Object obj) throws IllegalAccessException {
+    private List<FieldInfo> getFieldInfos(final Object obj) throws EasyWebserviceException {
         final List<Field> fields = new ArrayList<Field>();
         Class clazz = obj.getClass();
         final Annotation available = clazz.getAnnotation(SupperAvailable.class);
@@ -145,7 +112,11 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
                 final FieldInfo info = new FieldInfo();
                 info.setField(field);
                 info.setKey(field.getName());
-                info.setValue(field.get(obj));
+                try {
+                    info.setValue(field.get(obj));
+                } catch (IllegalAccessException e) {
+                    throw new EasyWebserviceException(e);
+                }
                 final Order order = field.getAnnotation(Order.class);
                 if(order!=null){
                     info.setOrder(order.value());
@@ -180,14 +151,6 @@ public class RequestHandlerChain extends Handler implements InitializingBean {
         }else{
             info.setFieldType(FieldType.FORM_DATA);
         }
-    }
-
-    public Map<String, Handler> getHandlers() {
-        return handlers;
-    }
-
-    public void setHandlers(Map<String, Handler> handlers) {
-        this.handlers = handlers;
     }
 
     class Sortable implements Comparator<FieldInfo>{

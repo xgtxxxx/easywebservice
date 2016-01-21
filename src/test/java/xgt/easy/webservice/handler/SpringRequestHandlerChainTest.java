@@ -8,8 +8,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import xgt.easy.webservice.Adapter;
 import xgt.easy.webservice.Client;
 import xgt.easy.webservice.Request;
-import xgt.easy.webservice.client.EasyHttpClient;
-import xgt.easy.webservice.client.SimpleClient;
 import xgt.easy.webservice.model.ResponseInfo;
 import xgt.easy.webservice.utils.StringUtils;
 
