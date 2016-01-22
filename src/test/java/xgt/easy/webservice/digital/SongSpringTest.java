@@ -1,6 +1,5 @@
 package xgt.easy.webservice.digital;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,13 +7,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import xgt.easy.webservice.Adapter;
 import xgt.easy.webservice.Client;
-import xgt.easy.webservice.client.HttpSimpleClient;
 import xgt.easy.webservice.model.ResponseInfo;
 import xgt.easy.webservice.utils.StringUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"classpath:spring-song-test.xml"})
-public class SongTest {
+@ContextConfiguration({"classpath:spring-template-test.xml"})
+public class SongSpringTest {
     @Autowired
     private Client client;
 

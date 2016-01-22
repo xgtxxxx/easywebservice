@@ -1,7 +1,5 @@
 package xgt.easy.webservice.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -19,7 +17,6 @@ import xgt.easy.webservice.model.RequestInfo;
 import xgt.easy.webservice.model.ResponseInfo;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

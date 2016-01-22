@@ -11,7 +11,7 @@ public class SongDetailRequest extends GetRequest {
     private String cdin;
     @Path
     private String country = "us";
-    private String hashedCustomerId = DigestUtils.sha256Hex("CustomerId");
+    private String hashedCustomerId = "CustomerId";
     private String tenantId = "tenantId123456";
 
     public String getCdin() {
