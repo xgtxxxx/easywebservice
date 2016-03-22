@@ -7,6 +7,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import xgt.easy.webservice.Adapter;
 import xgt.easy.webservice.Client;
+import xgt.easy.webservice.ResponseAdapter;
 import xgt.easy.webservice.model.ResponseInfo;
 import xgt.easy.webservice.utils.StringUtils;
 
@@ -24,7 +25,7 @@ public class SongSpringTest {
         request.setCdin("ad0e0846de6a932d897db5d3176db80e7b469819");
         Authentication authentication = new Authentication();
         request.setHeaders(authentication.getAuthenticationHeaders());
-        String result = client.doRequest(request, new Adapter<String>() {
+        String result = client.doRequest(request, new ResponseAdapter<String>() {
             public String convertTo(ResponseInfo f) {
                 return StringUtils.toString(f.getBody());
             }
@@ -53,7 +54,7 @@ public class SongSpringTest {
                         + musicPurchaseRequest.getPriceSold(),
                 "e8ruK7rWRLHxbUioLZzrsB7JifTPn0nzksfnod9zAK31xDsfm7tyWWEleDLMokh"));
         musicPurchaseRequest.setTenantId("tenantId123456");
-        String result = client.doRequest(musicPurchaseRequest, new Adapter<String>() {
+        String result = client.doRequest(musicPurchaseRequest, new ResponseAdapter<String>() {
             public String convertTo(ResponseInfo f) {
                 return StringUtils.toString(f.getBody());
             }
@@ -68,7 +69,7 @@ public class SongSpringTest {
         request.setCtx("/music/search");
         request.setTerm("aa-bb");
         request.setHeaders(new Authentication().getAuthenticationHeaders());
-        final String result = client.doRequest(request, new Adapter<String>() {
+        final String result = client.doRequest(request, new ResponseAdapter<String>() {
             public String convertTo(ResponseInfo f) {
                 return StringUtils.toString(f.getBody());
             }

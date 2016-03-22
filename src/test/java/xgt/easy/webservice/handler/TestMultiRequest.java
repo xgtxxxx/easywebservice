@@ -5,6 +5,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import xgt.easy.webservice.Adapter;
 import xgt.easy.webservice.Client;
 import xgt.easy.webservice.Request;
+import xgt.easy.webservice.ResponseAdapter;
 import xgt.easy.webservice.model.ResponseInfo;
 import xgt.easy.webservice.utils.StringUtils;
 
@@ -18,7 +19,7 @@ public class TestMultiRequest {
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring-pooling-test.xml");
         final Client client = (Client) context.getBean("easyHttpClient");
                 Date start = new Date();
-        final Adapter<String> adapter = new Adapter<String>() {
+        final ResponseAdapter<String> adapter = new ResponseAdapter<String>() {
             public String convertTo(ResponseInfo f) {
                 return StringUtils.toString(f.getBody());
             }

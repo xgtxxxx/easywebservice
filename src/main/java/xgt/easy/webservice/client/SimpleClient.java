@@ -2,15 +2,14 @@ package xgt.easy.webservice.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xgt.easy.webservice.Adapter;
-import xgt.easy.webservice.Client;
-import xgt.easy.webservice.Handler;
-import xgt.easy.webservice.Request;
+import xgt.easy.webservice.*;
 import xgt.easy.webservice.exception.EasyWebserviceException;
 import xgt.easy.webservice.handler.HandlerFactory;
 import xgt.easy.webservice.model.ParameterPair;
+import xgt.easy.webservice.model.PostContentType;
 import xgt.easy.webservice.model.RequestInfo;
 import xgt.easy.webservice.model.ResponseInfo;
+import xgt.easy.webservice.utils.JsonUtils;
 import xgt.easy.webservice.utils.StringUtils;
 
 import java.util.List;
@@ -29,7 +28,7 @@ public abstract class SimpleClient implements Client {
 
     private Object lock = new Object();
 
-    public <T> T doRequest(Request request, Adapter<T> adapter) throws EasyWebserviceException {
+    public <T> T doRequest(Request request, ResponseAdapter<T> adapter) throws EasyWebserviceException {
         try{
             if(StringUtils.isEmpty(request.getHost())){
                 request.setHost(globalHost);
@@ -38,10 +37,10 @@ public abstract class SimpleClient implements Client {
                 request.setCtx(globalCtx);
             }
             final RequestInfo info = getHandler().handle(request);
-            writeLog(info);
             if(headers!=null){
                 info.addHeaders(headers);
             }
+            writeLog(info);
             return adapter.convertTo(doRequest(info));
         }catch (Exception e){
             throw new EasyWebserviceException(e);
@@ -67,16 +66,21 @@ public abstract class SimpleClient implements Client {
             hs.append("}");
             LOGGER.info("Request Headers : {}",hs.toString());
             LOGGER.info("Request Url : {}",info.getRequestUrl());
-            final StringBuffer fd = new StringBuffer("{");
-            for(int i=0; i<info.getFormData().size(); i++){
-                if(i>0){
-                    fd.append(";");
+            final StringBuffer fd = new StringBuffer();
+            if(info.getApplicationType().equals(PostContentType.JSON)){
+                fd.append(JsonUtils.toJson(info.getFormData()));
+            }else{
+                fd.append("{");
+                for(int i=0; i<info.getFormData().size(); i++){
+                    if(i>0){
+                        fd.append(";");
+                    }
+                    final ParameterPair header = info.getFormData().get(i);
+                    fd.append(header.getKey()).append(":").append(header.getValue());
                 }
-                final ParameterPair header = info.getFormData().get(i);
-                fd.append(header.getKey()).append(":").append(header.getValue());
+                fd.append("}");
             }
-            fd.append("}");
-            LOGGER.info("Request form data : {}",fd);
+            LOGGER.info("Request body : {}",fd);
         }
     }
 

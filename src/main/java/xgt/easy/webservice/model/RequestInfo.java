@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RequestInfo {
+    private String applicationType;
+
     private HttpMethod httpMethod;
 
     private String requestUrl;
@@ -31,7 +33,7 @@ public class RequestInfo {
     }
 
     public List<ParameterPair> getFormData() {
-        return formData;
+        return formData==null?new ArrayList<ParameterPair>():formData;
     }
 
     public void addHeaders(final List<ParameterPair> hds){
@@ -47,6 +49,14 @@ public class RequestInfo {
 
     public List<ParameterPair> getHeaders() {
         return headers==null?new ArrayList<ParameterPair>():headers;
+    }
+
+    public String getApplicationType() {
+        return applicationType==null?PostContentType.FORM_DATA:applicationType;
+    }
+
+    public void setApplicationType(String applicationType) {
+        this.applicationType = applicationType;
     }
 
     public void setHeaders(List<ParameterPair> headers) {

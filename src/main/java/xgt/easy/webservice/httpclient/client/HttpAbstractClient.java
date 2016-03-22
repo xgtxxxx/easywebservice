@@ -1,4 +1,4 @@
-package xgt.easy.webservice.client;
+package xgt.easy.webservice.httpclient.client;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -6,12 +6,13 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import xgt.easy.webservice.client.SimpleClient;
 import xgt.easy.webservice.exception.EasyWebserviceException;
+import xgt.easy.webservice.httpclient.EntityAdapter.EntityAdapter;
+import xgt.easy.webservice.httpclient.EntityAdapter.HttpSimpleEntityAdapter;
 import xgt.easy.webservice.model.ParameterPair;
 import xgt.easy.webservice.model.RequestInfo;
 import xgt.easy.webservice.model.ResponseInfo;
@@ -24,6 +25,8 @@ import java.util.Map;
 public abstract class HttpAbstractClient extends SimpleClient {
 
     private HttpAbstractClientFactory httpClientFactory;
+
+    private EntityAdapter entityAdapter;
 
     public ResponseInfo execute(final HttpRequestBase request) throws EasyWebserviceException {
         CloseableHttpClient client = httpClientFactory==null?HttpClients.createDefault():httpClientFactory.build();
@@ -72,7 +75,7 @@ public abstract class HttpAbstractClient extends SimpleClient {
     public HttpPost createPost(final RequestInfo info){
         HttpPost post = new HttpPost(info.getRequestUrl());
         addHeaders(info,post);
-        post.setEntity(createEntity(info.getFormData()));
+        post.setEntity(createEntity(info));
         return post;
     }
 
@@ -85,15 +88,11 @@ public abstract class HttpAbstractClient extends SimpleClient {
         }
     }
 
-    private HttpEntity createEntity(final List<ParameterPair> parameters){
-        StringBuffer sb = new StringBuffer();
-        for(ParameterPair parameter: parameters){
-            if(sb.length()>0){
-                sb.append('&');
-            }
-            sb.append(parameter.getKey()).append('=').append(parameter.getStringValue());
+    private HttpEntity createEntity(final RequestInfo info){
+        if(entityAdapter==null){
+            entityAdapter = new HttpSimpleEntityAdapter();
         }
-        return new StringEntity(sb.toString(),ContentType.create("application/x-www-form-urlencoded", "utf-8"));
+        return entityAdapter.convertTo(info);
     }
 
     private Map<String,String> toMap(List<ParameterPair> list){
@@ -106,5 +105,17 @@ public abstract class HttpAbstractClient extends SimpleClient {
 
     public void setHttpClientFactory(HttpAbstractClientFactory httpClientFactory) {
         this.httpClientFactory = httpClientFactory;
+    }
+
+    public HttpAbstractClientFactory getHttpClientFactory() {
+        return httpClientFactory;
+    }
+
+    public EntityAdapter getEntityAdapter() {
+        return entityAdapter;
+    }
+
+    public void setEntityAdapter(EntityAdapter entityAdapter) {
+        this.entityAdapter = entityAdapter;
     }
 }

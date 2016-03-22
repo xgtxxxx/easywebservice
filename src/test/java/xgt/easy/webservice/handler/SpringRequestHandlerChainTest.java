@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import xgt.easy.webservice.Adapter;
 import xgt.easy.webservice.Client;
 import xgt.easy.webservice.Request;
+import xgt.easy.webservice.ResponseAdapter;
 import xgt.easy.webservice.model.ResponseInfo;
 import xgt.easy.webservice.utils.StringUtils;
 
@@ -22,7 +23,7 @@ public class SpringRequestHandlerChainTest {
     @Test
     public void testBaidu(){
         Request request = new BaiduRequest();
-        String result = client.doRequest(request, new Adapter<String>() {
+        String result = client.doRequest(request, new ResponseAdapter<String>() {
             public String convertTo(ResponseInfo f) {
                 return StringUtils.toString(f.getBody());
             }
@@ -36,7 +37,7 @@ public class SpringRequestHandlerChainTest {
         Date start = new Date();
         for(int i=0; i<100; i++){
             Request request = new BaiduRequest();
-            String result = client.doRequest(request, new Adapter<String>() {
+            String result = client.doRequest(request, new ResponseAdapter<String>() {
                 public String convertTo(ResponseInfo f) {
                     return StringUtils.toString(f.getBody());
                 }
@@ -49,7 +50,7 @@ public class SpringRequestHandlerChainTest {
     @Test
     public void testMultiRequest() throws InterruptedException {
         Date start = new Date();
-        final Adapter<String> adapter = new Adapter<String>() {
+        final ResponseAdapter<String> adapter = new ResponseAdapter<String>() {
             public String convertTo(ResponseInfo f) {
                 return StringUtils.toString(f.getBody());
             }

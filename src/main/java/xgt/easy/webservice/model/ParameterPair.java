@@ -1,5 +1,6 @@
 package xgt.easy.webservice.model;
 
+import xgt.easy.webservice.utils.JsonUtils;
 import xgt.easy.webservice.utils.StringUtils;
 
 /**
@@ -24,5 +25,9 @@ public class ParameterPair {
 
     public String getStringValue(){
         return StringUtils.toString(value);
+    }
+
+    public String getJsonValue(){
+        return JsonUtils.toJson(value);
     }
 }

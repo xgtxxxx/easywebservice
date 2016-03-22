@@ -2,13 +2,11 @@ package xgt.easy.webservice.handler;
 
 import xgt.easy.webservice.Handler;
 import xgt.easy.webservice.HttpMethod;
+import xgt.easy.webservice.PostRequest;
 import xgt.easy.webservice.Request;
 import xgt.easy.webservice.annotation.*;
 import xgt.easy.webservice.exception.EasyWebserviceException;
-import xgt.easy.webservice.model.FieldInfo;
-import xgt.easy.webservice.model.FieldType;
-import xgt.easy.webservice.model.ParameterPair;
-import xgt.easy.webservice.model.RequestInfo;
+import xgt.easy.webservice.model.*;
 import xgt.easy.webservice.utils.StringUtils;
 
 import java.lang.annotation.Annotation;
@@ -34,6 +32,10 @@ public class RequestHandler extends Handler {
         requestInfo.setHttpMethod(((Request)request).getHttpMethod());
         requestInfo.setRequestUrl(buildUrl((Request) request, paths, parameters));
         requestInfo.setHeaders(((Request) request).getHeaders());
+        if(request instanceof PostRequest){
+            final String type = ((PostRequest) request).getApplicationType();
+            requestInfo.setApplicationType(StringUtils.isEmpty(type)? PostContentType.FORM_DATA:type);
+        }
         return requestInfo;
     }
 
