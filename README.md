@@ -84,7 +84,53 @@ spring-pooling-test.xml：
 	RequestHandlerChainFactory：系统默认的HandlerChain工厂，继承HandlerFactory。
 	SkipHandler：用于被@Skip注解的逻辑处理
 
+	package：xgt.easy.webservice.httpclient
+	httpclient的客户端实现。
 
 	
+5、扩展ResponseAdapter
 	
+	//该类是一个对webservice反馈结果的简单适配器，实际应用时可以把返回的数据类型转换成实际的应用对象。
+	public class SimpleStringAdapter implements ResponseAdapter<String> {
+	    public String convertTo(final ResponseInfo f) {
+	        return StringUtils.toString(f.getBody());
+	    }
+	}
+
+6、扩展RequestHandlerChainFactory
+
+    public static final String SKIP_HANDLER = "skip_handler";
+    public static final String FILTER_HANDLER = "filter_handler";
+    public static final String ENCODE_HANDLER = "encode_handler";
+    public static final String RENAME_HANDLER = "rename_handler";
+
+    private Map<String,xgt.easy.webservice.Handler> handlers = new HashMap<String,xgt.easy.webservice.Handler>();
+    
+    public Handler build() {
+        synchronized (lock){
+            if(first==null){
+                buildChain();
+            }
+        }
+        return first;
+    }
+
+    private void buildChain(){
+        first = new RequestHandler();
+        xgt.easy.webservice.Handler next = buildNext(first, handlers.get(SKIP_HANDLER)==null?new SkipHandler():handlers.get(SKIP_HANDLER));
+        next = buildNext(next, handlers.get(FILTER_HANDLER));
+        next = buildNext(next,handlers.get(ENCODE_HANDLER)==null?new EncodeHandler():handlers.get(ENCODE_HANDLER));
+        next = buildNext(next,handlers.get(FILTER_HANDLER));
+        buildNext(next,handlers.get(RENAME_HANDLER)==null?new RenameHandler():handlers.get(RENAME_HANDLER));
+    }
+    
+    //在实际应用当中如果默认的一些handler无法满足需求，则可以通过RequestHandlerChainFactory的setHandlers和addHandler两个方法，把自定的
+    //handler付给相应的key值，当然也可以用Spring的ioc对handlers进行注入。自定义Handler必须继承Handler基类。
+    
+    //如果实际应用中，通过RequestHandlerChainFactory构造的handlerchain无法满足需求时，你也可以自己去扩展HandlerFactory类，实现自己的
+    //HandlerChain构造逻辑
+    
+7、Request扩展
+
+	本应用中已经有两个类扩展了Request，分别为GetRequest和PostRequest，这两个类分别执行get请求和post请求。一般get请求和post
 
