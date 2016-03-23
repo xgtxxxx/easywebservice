@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import xgt.easy.webservice.*;
 import xgt.easy.webservice.exception.EasyWebserviceException;
 import xgt.easy.webservice.handler.HandlerFactory;
+import xgt.easy.webservice.handler.RequestHandlerChainFactory;
 import xgt.easy.webservice.model.ParameterPair;
 import xgt.easy.webservice.model.PostContentType;
 import xgt.easy.webservice.model.RequestInfo;
@@ -48,6 +49,9 @@ public abstract class SimpleClient implements Client {
     }
 
     private Handler getHandler(){
+        if(handlerFactory==null){
+            handlerFactory = new RequestHandlerChainFactory();
+        }
         return handlerFactory.build();
     }
 

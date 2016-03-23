@@ -1,6 +1,7 @@
 package xgt.easy.webservice.hotel;
 
 import org.junit.BeforeClass;
+import xgt.easy.webservice.Client;
 import xgt.easy.webservice.adapters.SimpleStringAdapter;
 import xgt.easy.webservice.httpclient.client.HttpSimpleClient;
 import xgt.easy.webservice.client.SimpleClient;
