@@ -47,7 +47,7 @@ Spring集成：
     
 spring-pooling-test.xml：
 
-<context:component-scan base-package="xgt.easy.webservice"/>
-<bean id="easyHttpClient" class="xgt.easy.webservice.httpclient.client.HttpSimpleClient"></bean>
+	<context:component-scan base-package="xgt.easy.webservice"/>
+	<bean id="easyHttpClient" class="xgt.easy.webservice.httpclient.client.HttpSimpleClient"></bean>
 
 4、
