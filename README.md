@@ -7,7 +7,8 @@ Easywebservice 主要为简化项目中webservice的编码而产生的
 
 3、简单例子（通过http的Get方法请求百度首页）：
 
-main方法启动：
+main方法启动
+
     main(){
          Client client = new HttpSimpleClient();
          Request request = new BaiduRequest();
@@ -16,6 +17,7 @@ main方法启动：
     }
 
 BaiduRequest:
+
 	@SupperAvailable
 	public class BaiduRequest extends Request {
           @Override
@@ -27,7 +29,9 @@ BaiduRequest:
                return "http://www.baidu.com";
            }
 	}
+	
 Spring集成：
+
     @RunWith(SpringJUnit4ClassRunner.class)
     @ContextConfiguration({"classpath:spring-pooling-test.xml"})
     public class ExampleSpring {
@@ -40,7 +44,9 @@ Spring集成：
             System.out.println(html);
         }
     }
+    
 spring-pooling-test.xml：
+
 <context:component-scan base-package="xgt.easy.webservice"/>
 <bean id="easyHttpClient" class="xgt.easy.webservice.httpclient.client.HttpSimpleClient"></bean>
 
