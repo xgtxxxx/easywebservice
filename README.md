@@ -132,5 +132,124 @@ spring-pooling-test.xml：
     
 7、Request扩展
 
-	本应用中已经有两个类扩展了Request，分别为GetRequest和PostRequest，这两个类分别执行get请求和post请求。一般get请求和post
+	本应用中已经有两个类扩展了Request，分别为GetRequest和PostRequest，这两个类分别执行get请求和post请求。一般get请求和post请求就直接继承这两个类就可以了，一下是两个Request实例：
+	
+	//该类继承GetRequest请求，假如你设置的host=http://localhost:8080,ctx=/myapp,那么构造出来的url=http://localhost:8080/myapp/{cdin}/us?id=CustomerId&tenantId=tenantId123456
+	
+	public class etailRequest extends GetRequest {
+	    @Path
+	    private String cdin;
+	    @Path
+	    private String country = "us";
+	    @Rename("id")
+	    private String hashedCustomerId = "CustomerId";
+	    private String tenantId = "tenantId123456";
+	
+	    public String getCdin() {
+	        return cdin;
+	    }
+	
+	    public void setCdin(String cdin) {
+	        this.cdin = cdin;
+	    }
+	}
+	
+	//该类是一个post请求的request，如果host=http://localhost:8080,ctx=/myapp，那么url=http://localhost:8080/myapp?cdin={cdin}
+	//priceSold和taxAmount分别是form data。Post提交的ContentType默认为application/x-www-form-urlencoded，你同样可以通过PostRequest的setApplicationType方法设置成你想要的请求类型，目前系统只提供了HttpClient对application/x-www-form-urlencoded和application/json的处理逻辑，其他类型需要你自己实现处理逻辑，如果采用HttpClient作为webservice请求框架，则可以直接继承RequestInfoHandler，并将该类的实例注入到HttpSimpleEntityAdapter的handlers里面。
+	
+	@SupperAvailable
+	@Skip
+	public class PurchaseRequest extends PostRequest {
+	    @UrlParameter
+	    private String cdin;
+	    private Integer priceSold;
+	    private Integer taxAmount;
+	    //省略getter和setter
+	}
+	
+8、针对HttpClient实现时的一些扩展
 
+
+8、扩展Client，HttpClient的实现
+
+	本系统提供了一套简单的HttpClient的实现，Client <- SimpleClient <- HttpAbstractClient <- HttpSimpleClient
+	
+	HttpSimpleClient只是实现了简单的HttpClient的Get请求和Post请求，如果有更多的请求需要实现，则可以扩展HttpAbstractClient类，目前系统只提供了Post，Get，Put和Delete四种方式请求，如果需要更多的请求，则需要你去继承Client，对Client进行深度定制。
+	
+	//HttpAbstractClient该类的中可以注入自定义的HttpAbstractClientFactory和EntityAdapter，当然如果没有注入任何值，则系统默认使用HttpClientFactory和HttpSimpleEntityAdapter的实例。
+	
+	public abstract class HttpAbstractClient extends SimpleClient {
+	
+	    private HttpAbstractClientFactory httpClientFactory;
+	
+	    private EntityAdapter entityAdapter;
+	    
+	    ...
+	}
+	
+	//HttpClientFactory主要是对构造的CloseableHttpClient进行一些基本的配置，如果给定的配置不够用，则可以自己去扩展HttpAbstractClientFactory类
+	
+	public final class HttpClientFactory extends HttpAbstractClientFactory {
+	    private int socketTimeout;
+	
+	    private int connectionTimeout;
+	
+	    private int requestTimeout;
+	
+	    private int maxConnections;
+	
+	    private int defaultMaxConnections;
+	
+	    private HttpClientBuilder httpClientBuilder;
+	
+	    private Object lock = new Object();
+	
+	    public CloseableHttpClient build() {
+	        synchronized (lock){
+	            if(httpClientBuilder==null){
+	                init();
+	            }
+	        }
+	        return httpClientBuilder.build();
+	    }
+	    ...
+	}
+
+	//该类是将PostRequest的请求体转换成相应的ContentType类型，参见7。
+	public class HttpSimpleEntityAdapter extends EntityAdapter {
+	
+	    private Map<String,RequestInfoHandler> handlers = new HashMap<String, RequestInfoHandler>();
+	
+	    public HttpEntity convertTo(RequestInfo from) {
+	        return getHandler(from.getApplicationType()).convertTo(from.getFormData());
+	    }
+	    ...
+	}
+
+9、其他框架对Client的扩展，这里给出一个简单的SpringTemplete实现。
+
+	public class SpringTemplateClient extends SimpleClient {
+	    @Override
+	    public ResponseInfo doGet(RequestInfo info) throws EasyWebserviceException {
+	        RestTemplate restClient = new RestTemplate();
+	        ResponseInfo response = new ResponseInfo();
+	
+	        final HttpHeaders headers = new HttpHeaders();
+	        final List<ParameterPair> items = new Authentication().getAuthenticationHeaders();
+	        for (final ParameterPair item : items) {
+	            headers.add(item.getKey(), item.getStringValue());
+	        }
+	        final HttpEntity<String> entity = new HttpEntity<String>(headers);
+	
+	
+	        response.setBody(restClient.exchange(info.getRequestUrl(), org.springframework.http.HttpMethod.GET, entity, String.class));
+	        return response;
+	    }
+	
+	    @Override
+	    public ResponseInfo doPost(RequestInfo info) throws EasyWebserviceException {
+	        return null;
+	    }
+	}
+	
+以上仅供参考，本应用还有很多需要改进的地方，如果你对本应用有兴趣，希望你能提出宝贵的改进意见。
