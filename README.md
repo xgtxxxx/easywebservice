@@ -167,8 +167,6 @@ spring-pooling-test.xml：
 	    //省略getter和setter
 	}
 	
-8、针对HttpClient实现时的一些扩展
-
 
 8、扩展Client，HttpClient的实现
 
@@ -177,7 +175,6 @@ spring-pooling-test.xml：
 	HttpSimpleClient只是实现了简单的HttpClient的Get请求和Post请求，如果有更多的请求需要实现，则可以扩展HttpAbstractClient类，目前系统只提供了Post，Get，Put和Delete四种方式请求，如果需要更多的请求，则需要你去继承Client，对Client进行深度定制。
 	
 	//HttpAbstractClient该类的中可以注入自定义的HttpAbstractClientFactory和EntityAdapter，当然如果没有注入任何值，则系统默认使用HttpClientFactory和HttpSimpleEntityAdapter的实例。
-	
 	public abstract class HttpAbstractClient extends SimpleClient {
 	
 	    private HttpAbstractClientFactory httpClientFactory;
@@ -188,7 +185,6 @@ spring-pooling-test.xml：
 	}
 	
 	//HttpClientFactory主要是对构造的CloseableHttpClient进行一些基本的配置，如果给定的配置不够用，则可以自己去扩展HttpAbstractClientFactory类
-	
 	public final class HttpClientFactory extends HttpAbstractClientFactory {
 	    private int socketTimeout;
 	
