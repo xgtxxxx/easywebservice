@@ -48,7 +48,7 @@ Spring集成：
 spring-pooling-test.xml：
 
 	<context:component-scan base-package="xgt.easy.webservice"/>
-	<bean id="easyHttpClient" class="xgt.easy.webservice.httpclient.client.HttpSimpleClient"></bean>
+	<bean id="easyHttpClient" class="HttpSimpleClient"></bean>
 	
 4、包和类介绍
 
@@ -104,7 +104,7 @@ spring-pooling-test.xml：
     public static final String ENCODE_HANDLER = "encode_handler";
     public static final String RENAME_HANDLER = "rename_handler";
 
-    private Map<String,xgt.easy.webservice.Handler> handlers = new HashMap<String,xgt.easy.webservice.Handler>();
+    private Map<String,Handler> handlers = new HashMap<String,Handler>();
     
     public Handler build() {
         synchronized (lock){
@@ -117,7 +117,7 @@ spring-pooling-test.xml：
 
     private void buildChain(){
         first = new RequestHandler();
-        xgt.easy.webservice.Handler next = buildNext(first, handlers.get(SKIP_HANDLER)==null?new SkipHandler():handlers.get(SKIP_HANDLER));
+        Handler next = buildNext(first, handlers.get(SKIP_HANDLER)==null?new SkipHandler():handlers.get(SKIP_HANDLER));
         next = buildNext(next, handlers.get(FILTER_HANDLER));
         next = buildNext(next,handlers.get(ENCODE_HANDLER)==null?new EncodeHandler():handlers.get(ENCODE_HANDLER));
         next = buildNext(next,handlers.get(FILTER_HANDLER));
