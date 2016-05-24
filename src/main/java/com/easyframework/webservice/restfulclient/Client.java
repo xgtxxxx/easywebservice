@@ -1,5 +1,7 @@
 package com.easyframework.webservice.restfulclient;
 
+import com.easyframework.webservice.restfulclient.adapters.responseadapter.ResponseAdapter;
+
 import javax.xml.ws.WebServiceException;
 
 public interface Client {

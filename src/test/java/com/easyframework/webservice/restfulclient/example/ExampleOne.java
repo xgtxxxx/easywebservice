@@ -4,7 +4,7 @@ import com.easyframework.webservice.restfulclient.Client;
 import com.easyframework.webservice.restfulclient.Request;
 import com.easyframework.webservice.restfulclient.handler.BaiduRequest;
 import com.easyframework.webservice.restfulclient.httpclient.client.HttpSimpleClient;
-import com.easyframework.webservice.restfulclient.adapters.SimpleStringAdapter;
+import com.easyframework.webservice.restfulclient.adapters.responseadapter.SimpleStringAdapter;
 
 public class ExampleOne {
     public static void main(String[] args) {

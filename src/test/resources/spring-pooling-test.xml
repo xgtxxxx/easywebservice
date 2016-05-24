@@ -9,7 +9,7 @@ http://www.springframework.org/schema/context
 http://www.springframework.org/schema/context/spring-context-4.2.xsd
 ">
     <context:component-scan base-package="xgt.easy.webservice" />
-    <bean id="handlerFactory" class="com.easyframework.webservice.restfulclient.handler.RequestHandlerChainFactory"/>
+    <bean id="handlerFactory" class="com.easyframework.webservice.restfulclient.handler.annotationhandler.RequestHandlerChainFactory"/>
     <bean id="httpClientFactory" class="com.easyframework.webservice.restfulclient.httpclient.client.HttpClientFactory"/>
     <bean id="easyHttpClient" class="com.easyframework.webservice.restfulclient.httpclient.client.HttpSimpleClient">
         <property name="handlerFactory" ref="handlerFactory"/>

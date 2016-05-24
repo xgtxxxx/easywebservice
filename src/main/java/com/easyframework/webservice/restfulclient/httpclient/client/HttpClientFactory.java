@@ -43,4 +43,28 @@ public final class HttpClientFactory extends HttpAbstractClientFactory {
                 .setConnectionManager(clientConnectionManager)
                 .setDefaultRequestConfig(config.build());
     }
+
+    public void setSocketTimeout(int socketTimeout) {
+        this.socketTimeout = socketTimeout;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    public void setRequestTimeout(int requestTimeout) {
+        this.requestTimeout = requestTimeout;
+    }
+
+    public void setMaxConnections(int maxConnections) {
+        this.maxConnections = maxConnections;
+    }
+
+    public void setDefaultMaxConnections(int defaultMaxConnections) {
+        this.defaultMaxConnections = defaultMaxConnections;
+    }
+
+    public void setHttpClientBuilder(HttpClientBuilder httpClientBuilder) {
+        this.httpClientBuilder = httpClientBuilder;
+    }
 }

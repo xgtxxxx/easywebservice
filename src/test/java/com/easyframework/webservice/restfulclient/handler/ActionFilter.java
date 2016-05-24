@@ -1,5 +1,6 @@
 package com.easyframework.webservice.restfulclient.handler;
 
+import com.easyframework.webservice.restfulclient.handler.annotationhandler.FilterHandler;
 import com.easyframework.webservice.restfulclient.model.FieldInfo;
 import com.easyframework.webservice.restfulclient.utils.StringUtils;
 

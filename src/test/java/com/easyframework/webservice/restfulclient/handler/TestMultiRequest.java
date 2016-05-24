@@ -2,7 +2,7 @@ package com.easyframework.webservice.restfulclient.handler;
 
 import com.easyframework.webservice.restfulclient.Client;
 import com.easyframework.webservice.restfulclient.Request;
-import com.easyframework.webservice.restfulclient.ResponseAdapter;
+import com.easyframework.webservice.restfulclient.adapters.responseadapter.ResponseAdapter;
 import com.easyframework.webservice.restfulclient.model.ResponseInfo;
 import com.easyframework.webservice.restfulclient.utils.StringUtils;
 import org.springframework.context.ApplicationContext;

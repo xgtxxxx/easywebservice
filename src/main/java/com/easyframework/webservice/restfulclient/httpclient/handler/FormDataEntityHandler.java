@@ -1,5 +1,6 @@
 package com.easyframework.webservice.restfulclient.httpclient.handler;
 
+import com.easyframework.webservice.restfulclient.handler.PostBodyHandler;
 import com.easyframework.webservice.restfulclient.model.PostContentType;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
@@ -8,7 +9,7 @@ import com.easyframework.webservice.restfulclient.model.ParameterPair;
 
 import java.util.List;
 
-public class FormDataEntityHandler extends RequestInfoHandler {
+public class FormDataEntityHandler extends PostBodyHandler<HttpEntity> {
     public HttpEntity convertTo(List<ParameterPair> from) {
         StringBuffer sb = new StringBuffer();
         for(ParameterPair parameter: from){

@@ -14,6 +14,14 @@ public final class StringUtils {
     }
 
     public static final String toString(Object obj){
-        return obj==null?null:String.valueOf(obj);
+        if(obj==null){
+            return null;
+        }else{
+            if(obj instanceof String){
+                return (String)obj;
+            }
+            return String.valueOf(obj);
+        }
+
     }
 }

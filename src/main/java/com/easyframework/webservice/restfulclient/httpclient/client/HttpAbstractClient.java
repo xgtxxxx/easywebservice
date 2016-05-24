@@ -1,8 +1,12 @@
 package com.easyframework.webservice.restfulclient.httpclient.client;
 
-import com.easyframework.webservice.restfulclient.client.SimpleClient;
+import com.easyframework.webservice.restfulclient.adapters.requestadapter.PostBodyAdapter;
+import com.easyframework.webservice.restfulclient.client.AbstractSimpleClient;
 import com.easyframework.webservice.restfulclient.exception.EasyWebserviceException;
+import com.easyframework.webservice.restfulclient.httpclient.HttpPostBodyAdapter;
+import com.easyframework.webservice.restfulclient.model.ParameterPair;
 import com.easyframework.webservice.restfulclient.model.RequestInfo;
+import com.easyframework.webservice.restfulclient.model.ResponseInfo;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -12,28 +16,22 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import com.easyframework.webservice.restfulclient.httpclient.EntityAdapter.EntityAdapter;
-import com.easyframework.webservice.restfulclient.httpclient.EntityAdapter.HttpSimpleEntityAdapter;
-import com.easyframework.webservice.restfulclient.model.ParameterPair;
-import com.easyframework.webservice.restfulclient.model.ResponseInfo;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class HttpAbstractClient extends SimpleClient {
+public abstract class HttpAbstractClient extends AbstractSimpleClient<CloseableHttpClient> {
 
-    private HttpAbstractClientFactory httpClientFactory;
-
-    private EntityAdapter entityAdapter;
+    private PostBodyAdapter<HttpEntity> entityAdapter;
 
     public ResponseInfo execute(final HttpRequestBase request) throws EasyWebserviceException {
-        CloseableHttpClient client = httpClientFactory==null?HttpClients.createDefault():httpClientFactory.build();
+        CloseableHttpClient client = clientFactory==null?HttpClients.createDefault():clientFactory.build();
         try {
             return execute(client,request);
         } finally{
-            if(httpClientFactory==null){
+            if(clientFactory==null){
                 try{
                     client.close();
                 }catch (IOException e){
@@ -90,32 +88,12 @@ public abstract class HttpAbstractClient extends SimpleClient {
 
     private HttpEntity createEntity(final RequestInfo info){
         if(entityAdapter==null){
-            entityAdapter = new HttpSimpleEntityAdapter();
+            entityAdapter = new HttpPostBodyAdapter();
         }
         return entityAdapter.convertTo(info);
     }
 
-    private Map<String,String> toMap(List<ParameterPair> list){
-        Map<String,String> map = new HashMap<String, String>();
-        for(ParameterPair parameterPair:list){
-            map.put(parameterPair.getKey(),parameterPair.getStringValue());
-        }
-        return map;
-    }
-
-    public void setHttpClientFactory(HttpAbstractClientFactory httpClientFactory) {
-        this.httpClientFactory = httpClientFactory;
-    }
-
-    public HttpAbstractClientFactory getHttpClientFactory() {
-        return httpClientFactory;
-    }
-
-    public EntityAdapter getEntityAdapter() {
-        return entityAdapter;
-    }
-
-    public void setEntityAdapter(EntityAdapter entityAdapter) {
+    public void setEntityAdapter(PostBodyAdapter<HttpEntity> entityAdapter) {
         this.entityAdapter = entityAdapter;
     }
 }

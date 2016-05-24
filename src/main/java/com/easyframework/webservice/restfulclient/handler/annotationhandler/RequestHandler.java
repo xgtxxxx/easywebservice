@@ -1,4 +1,4 @@
-package com.easyframework.webservice.restfulclient.handler;
+package com.easyframework.webservice.restfulclient.handler.annotationhandler;
 
 import com.easyframework.webservice.restfulclient.annotation.*;
 import com.easyframework.webservice.restfulclient.model.*;

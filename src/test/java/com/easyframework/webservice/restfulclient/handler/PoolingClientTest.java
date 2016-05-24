@@ -1,6 +1,6 @@
 package com.easyframework.webservice.restfulclient.handler;
 
-import com.easyframework.webservice.restfulclient.ResponseAdapter;
+import com.easyframework.webservice.restfulclient.adapters.responseadapter.ResponseAdapter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
